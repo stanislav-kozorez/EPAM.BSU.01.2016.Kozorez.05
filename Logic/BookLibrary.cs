@@ -27,6 +27,7 @@ namespace Logic
         private static IBookManager currentBookManager = DEFAULT_BOOK_MANAGER;
         private static readonly Dictionary<FindTag, IFindCondition> findConditions;
         private static readonly Dictionary<SortTag, ISortCondition> sortConditions;
+        private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public static List<Book> Books { get { return new List<Book>(books); } }
 
@@ -62,7 +63,10 @@ namespace Logic
         public static List<Book> LoadFromFile(string fileName)
         {
             if (fileName == null)
+            {
+                logger.Error($"{nameof(fileName)} is null");
                 throw new ArgumentNullException($"{nameof(fileName)} is null");
+            }
             books = currentBookManager.LoadFile(fileName);
             return books;
         }
@@ -70,21 +74,32 @@ namespace Logic
         public static void SaveToFile(string fileName)
         {
             if (fileName == null)
+            {
+                logger.Error($"{nameof(fileName)} is null");
                 throw new ArgumentNullException($"{nameof(fileName)} is null");
+            }
             currentBookManager.SaveToFile(fileName, books);
         }
 
         public static void AddBook(Book book)
         {
             if (book == null)
-                throw new ArgumentNullException("Argument book is null");
+            {
+                logger.Error($"Argument {nameof(book)} is null");
+                throw new ArgumentNullException($"Argument {nameof(book)} is null");
+            }
             books.Add(book);
+            logger.Info("New Book was added");
         }
 
         public static bool RemoveBook(Book book)
         {
             if (book == null)
-                throw new ArgumentNullException("Argument book is null");
+            {
+                logger.Error($"Argument {nameof(book)} is null");
+                throw new ArgumentNullException($"Argument {nameof(book)} is null");
+            }
+            logger.Info("Book was deleted");
             return books.Remove(book);
         }
 
@@ -96,7 +111,7 @@ namespace Logic
                 if (findConditions[tag].CheckCondition(book, pattern))
                     result.Add(book);
             }
-
+            logger.Info("Find Method");
             return result;
         }
 
@@ -106,6 +121,7 @@ namespace Logic
                 for (int j = i + 1; j < books.Count; j++)
                     if (sortConditions[tag].CheckCondition(books[i], books[j]))
                         Swap(i, j);
+            logger.Info("Sort Method");
             return new List<Book>(books);
         }
 
