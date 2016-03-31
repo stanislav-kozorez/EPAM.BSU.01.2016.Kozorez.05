@@ -51,12 +51,10 @@
     <Compile Include="FindConditions\FindByNameCondition.cs" />
     <Compile Include="FindConditions\FindByYearCondition.cs" />
     <Compile Include="BookManagers\IBookManager.cs" />
-    <Compile Include="FindConditions\IFindCondition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SortConditions\ISortCondition.cs" />
-    <Compile Include="SortConditions\SortByAuthorCondition.cs" />
-    <Compile Include="SortConditions\SortByNameCondition.cs" />
-    <Compile Include="SortConditions\SortByYearCondition.cs" />
+    <Compile Include="SortConditions\SortByAuthor.cs" />
+    <Compile Include="SortConditions\SortByName.cs" />
+    <Compile Include="SortConditions\SortByYear.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="NLog.config">

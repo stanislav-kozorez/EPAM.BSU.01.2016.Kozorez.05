@@ -6,126 +6,86 @@ using Logic.BookManagers;
 
 namespace Logic
 {
-    public enum SortTag
+    public sealed class BookLibrary
     {
-        Name,
-        Author,
-        Year
-    }
+        private List<Book> books = new List<Book>();
+        private readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
-    public enum FindTag
-    {
-        Name,
-        Author,
-        Year
-    }
+        public List<Book> Books { get { return new List<Book>(books); } }
 
-    public static class BookLibrary
-    {
-        private static readonly IBookManager DEFAULT_BOOK_MANAGER = new BookManagers.BinaryManager();
-        private static List<Book> books = new List<Book>();
-        private static IBookManager currentBookManager = DEFAULT_BOOK_MANAGER;
-        private static readonly Dictionary<FindTag, IFindCondition> findConditions;
-        private static readonly Dictionary<SortTag, ISortCondition> sortConditions;
-        private static readonly NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
-
-        public static List<Book> Books { get { return new List<Book>(books); } }
-
-        public static IBookManager CurrentBookManager
+        public List<Book> Load(IBookManager bookManager)
         {
-            get
+            if(bookManager == null)
             {
-                return currentBookManager;
+                logger.Error($"{nameof(bookManager)} is null");
+                throw new ArgumentNullException($"{nameof(bookManager)} is null");
             }
-            set
-            {
-                currentBookManager = (value) ?? DEFAULT_BOOK_MANAGER;
-            }
-        }
-
-        static BookLibrary()
-        {
-            findConditions = new Dictionary<FindTag, IFindCondition>()
-            {
-                { FindTag.Name,  new FindByNameCondition() },
-                { FindTag.Author,  new FindByAuthorCondition() },
-                { FindTag.Year,  new FindByYearCondition() },
-            };
-
-            sortConditions = new Dictionary<SortTag, ISortCondition>()
-            {
-                { SortTag.Name,  new SortByNameCondition() },
-                { SortTag.Author,  new SortByAuthorCondition() },
-                { SortTag.Year,  new SortByYearCondition() },
-            };
-        }
-
-        public static List<Book> LoadFromFile(string fileName)
-        {
-            if (fileName == null)
-            {
-                logger.Error($"{nameof(fileName)} is null");
-                throw new ArgumentNullException($"{nameof(fileName)} is null");
-            }
-            books = currentBookManager.LoadFile(fileName);
+            books = bookManager.Load();
             return books;
         }
 
-        public static void SaveToFile(string fileName)
+        public void Save(IBookManager bookManager)
         {
-            if (fileName == null)
+            if (bookManager == null)
             {
-                logger.Error($"{nameof(fileName)} is null");
-                throw new ArgumentNullException($"{nameof(fileName)} is null");
+                logger.Error($"{nameof(bookManager)} is null");
+                throw new ArgumentNullException($"{nameof(bookManager)} is null");
             }
-            currentBookManager.SaveToFile(fileName, books);
+            bookManager.Save(books);
         }
 
-        public static void AddBook(Book book)
+        public void AddBook(Book book)
         {
             if (book == null)
             {
                 logger.Error($"Argument {nameof(book)} is null");
                 throw new ArgumentNullException($"Argument {nameof(book)} is null");
+            }
+            if (books.Contains(book))
+            {
+                logger.Error($"Attempt to add book that already exists in the library");
+                throw new ArgumentException("The book is already exists in the library");
             }
             books.Add(book);
             logger.Info("New Book was added");
         }
 
-        public static bool RemoveBook(Book book)
+        public bool RemoveBook(Book book)
         {
             if (book == null)
             {
                 logger.Error($"Argument {nameof(book)} is null");
                 throw new ArgumentNullException($"Argument {nameof(book)} is null");
             }
-            logger.Info("Book was deleted");
+            logger.Info("Attempt to remove book");
             return books.Remove(book);
         }
 
-        public static List<Book> FindBooks(string pattern, FindTag tag)
+        public List<Book> FindBooks(Predicate<Book> predicate)
         {
             List<Book> result = new List<Book>();
             foreach (var book in books)
             {
-                if (findConditions[tag].CheckCondition(book, pattern))
+                if (predicate(book))
                     result.Add(book);
             }
             logger.Info("Find Method");
             return result;
         }
 
-        public static List<Book> SortBooks(SortTag tag)
+        public List<Book> SortBooks(IComparer<Book> comparer = null)
         {
+            IComparer<Book> c = comparer ?? Comparer<Book>.Default;
+
             for (int i = 0; i < books.Count - 1; i++)
                 for (int j = i + 1; j < books.Count; j++)
-                    if (sortConditions[tag].CheckCondition(books[i], books[j]))
+                    if (c.Compare(books[i], books[j]) > 0)
                         Swap(i, j);
             logger.Info("Sort Method");
             return new List<Book>(books);
         }
 
-        private static void Swap(int i, int j)
+        private void Swap(int i, int j)
         {
             Book temp = books[i];
             books[i] = books[j];

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Logic.SortConditions
 {
-    class SortByNameCondition : ISortCondition
+    public class SortByAuthor: IComparer<Book>
     {
-        public bool CheckCondition(Book b1, Book b2)
+        public int Compare(Book x, Book y)
         {
-            return String.Compare(b1.Name, b2.Name) == 1 ? true : false; 
+            return String.Compare(x.Author, y.Author);
         }
     }
 }

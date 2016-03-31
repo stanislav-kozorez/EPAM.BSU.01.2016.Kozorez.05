@@ -8,7 +8,7 @@ namespace Logic.BookManagers
 {
     public interface IBookManager
     {
-        List<Book> LoadFile(string fileName);
-        void SaveToFile(string fileName, List<Book> books);
+        List<Book> Load();
+        void Save(IEnumerable<Book> books);
     }
 }

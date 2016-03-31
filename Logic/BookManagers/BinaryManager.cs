@@ -7,13 +7,18 @@ using System.IO;
 
 namespace Logic.BookManagers
 {
-    public class BinaryManager : IBookManager
+    public sealed class BinaryManager : IBookManager
     {
-        public List<Book> LoadFile(string fileName)
+        private readonly string fileName;
+        public BinaryManager(string fileName)
         {
-            List<Book> result = new List<Book>();
             if (fileName == null)
                 throw new ArgumentNullException($"{nameof(fileName)} is null");
+            this.fileName = fileName;
+        }
+        public List<Book> Load()
+        {
+            List<Book> result = new List<Book>();
             if (File.Exists(fileName))
             {
                 using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
@@ -32,10 +37,8 @@ namespace Logic.BookManagers
             return result;
         }
 
-        public void SaveToFile(string fileName, List<Book> books)
+        public void Save(IEnumerable<Book> books)
         {
-            if (fileName == null)
-                throw new ArgumentNullException($"{nameof(fileName)} is null");
             using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Create)))
             {
                 foreach (var book in books)

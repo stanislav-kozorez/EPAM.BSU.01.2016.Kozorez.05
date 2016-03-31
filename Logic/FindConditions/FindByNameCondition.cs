@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Logic.FindConditions
 {
-    class FindByNameCondition : IFindCondition
+    class FindByNameCondition
     {
         public bool CheckCondition(Book book, string pattern)
         {

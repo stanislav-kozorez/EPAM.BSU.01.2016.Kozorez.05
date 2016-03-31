@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Logic;
+using Logic.BookManagers;
 
 namespace ConsoleTest
 {
@@ -11,32 +12,42 @@ namespace ConsoleTest
     {
         static void Main(string[] args)
         {
-            BookLibrary.AddBook(new Book("C# via CLR", "Jeffrey Richter", 2013));
-            BookLibrary.AddBook(new Book("C# via CLR", "Jeffrey Richter", 2010));
-            BookLibrary.AddBook(new Book("Test Book", "Фамилия автора", 2007));
-            BookLibrary.AddBook(new Book("C# 4.0", "Bart De Smet", 2010));
-            BookLibrary.AddBook(new Book("Book name", "Автор 2", 2007));
+            BookLibrary bookLibrary = new BookLibrary();
 
-            Console.WriteLine($"Books count: {BookLibrary.Books.Count}");
-            BookLibrary.RemoveBook(new Book("Test Book", "Фамилия автора", 2007));
-            Console.WriteLine($"Books count: {BookLibrary.Books.Count}");
+            bookLibrary.AddBook(new Book("C# via CLR", "Jeffrey Richter", 2013));
+            bookLibrary.AddBook(new Book("C# via CLR", "Jeffrey Richter", 2010));
+            bookLibrary.AddBook(new Book("Test Book", "Фамилия автора", 2007));
+            bookLibrary.AddBook(new Book("C# 4.0", "Bart De Smet", 2010));
+            bookLibrary.AddBook(new Book("Book name", "Автор 2", 2007));
 
-            BookLibrary.SaveToFile("books.dat");
-            BookLibrary.RemoveBook(new Book("C# via CLR", "Jeffrey Richter", 2010));
-            Console.WriteLine($"Books count: {BookLibrary.Books.Count}\n");
-            BookLibrary.LoadFromFile("books.dat");
-            BookLibrary.AddBook(new Book("Паттерны проектирования на платформе .NET", "Тепляков Сергей", 2015));
+            Console.WriteLine($"Books count: {bookLibrary.Books.Count}");
+            bookLibrary.RemoveBook(new Book("Test Book", "Фамилия автора", 2007));
+            Console.WriteLine($"Books count: {bookLibrary.Books.Count}");
 
-            foreach (var book in BookLibrary.Books)
+            bookLibrary.Save(new BinaryManager("books.dat"));
+            bookLibrary.RemoveBook(new Book("C# via CLR", "Jeffrey Richter", 2010));
+            Console.WriteLine($"Books count: {bookLibrary.Books.Count}\n");
+            bookLibrary.Load(new BinaryManager("books.dat"));
+            bookLibrary.AddBook(new Book("Паттерны проектирования на платформе .NET", "Тепляков Сергей", 2015));
+
+            foreach (var book in bookLibrary.Books)
             {
                 Console.WriteLine($"Название: {book.Name}\nАвтор: {book.Author}\nГод: {book.Year}\n------------");
             }
 
-            Console.WriteLine($"\nFound books count: {BookLibrary.FindBooks("C# via CLR", FindTag.Name).Count}\n");
+            Console.WriteLine($"\nFound books count: {bookLibrary.FindBooks((x) => { return String.Compare(x.Author, "Jeffrey Richter") == 0; }).Count}\n");
 
-            BookLibrary.SortBooks(SortTag.Year);
+            bookLibrary.SortBooks();
 
-            foreach (var book in BookLibrary.Books)
+            foreach (var book in bookLibrary.Books)
+            {
+                Console.WriteLine($"Название: {book.Name}\nАвтор: {book.Author}\nГод: {book.Year}\n------------");
+            }
+
+            
+            Console.WriteLine();
+            bookLibrary.SortBooks(new Logic.SortConditions.SortByAuthor());
+            foreach (var book in bookLibrary.Books)
             {
                 Console.WriteLine($"Название: {book.Name}\nАвтор: {book.Author}\nГод: {book.Year}\n------------");
             }
