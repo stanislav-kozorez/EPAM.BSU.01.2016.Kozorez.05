@@ -45,6 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BookManagers\BinaryManager.cs" />
+    <Compile Include="BookManagers\BinarySerializationManager.cs" />
+    <Compile Include="BookManagers\XmlManager.cs" />
     <Compile Include="Entity\Book.cs" />
     <Compile Include="BookLibrary.cs" />
     <Compile Include="FindConditions\FindByAuthorCondition.cs" />

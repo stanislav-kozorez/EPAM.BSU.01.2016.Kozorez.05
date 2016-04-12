@@ -13,7 +13,7 @@ namespace Logic.BookManagers
         public BinaryManager(string fileName)
         {
             if (fileName == null)
-                throw new ArgumentNullException($"{nameof(fileName)} is null");
+                throw new ArgumentNullException(nameof(fileName));
             this.fileName = fileName;
         }
         public List<Book> Load()
@@ -21,6 +21,8 @@ namespace Logic.BookManagers
             List<Book> result = new List<Book>();
             if (File.Exists(fileName))
             {
+                if (new FileInfo(fileName).Extension != ".txt")
+                    throw new ArgumentException("file type is wrong");
                 using (BinaryReader reader = new BinaryReader(File.Open(fileName, FileMode.Open)))
                 {
                     while (reader.PeekChar() != -1)
@@ -39,6 +41,8 @@ namespace Logic.BookManagers
 
         public void Save(IEnumerable<Book> books)
         {
+            if (books == null)
+                throw new ArgumentNullException(nameof(books));
             using (BinaryWriter writer = new BinaryWriter(File.Open(fileName, FileMode.Create)))
             {
                 foreach (var book in books)

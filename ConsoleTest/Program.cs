@@ -24,10 +24,10 @@ namespace ConsoleTest
             bookLibrary.RemoveBook(new Book("Test Book", "Фамилия автора", 2007));
             Console.WriteLine($"Books count: {bookLibrary.Books.Count}");
 
-            bookLibrary.Save(new BinaryManager("books.dat"));
+            bookLibrary.Save(new BinaryManager("books.txt"));
             bookLibrary.RemoveBook(new Book("C# via CLR", "Jeffrey Richter", 2010));
             Console.WriteLine($"Books count: {bookLibrary.Books.Count}\n");
-            bookLibrary.Load(new BinaryManager("books.dat"));
+            bookLibrary.Load(new BinaryManager("books.txt"));
             bookLibrary.AddBook(new Book("Паттерны проектирования на платформе .NET", "Тепляков Сергей", 2015));
 
             foreach (var book in bookLibrary.Books)
@@ -51,6 +51,19 @@ namespace ConsoleTest
             {
                 Console.WriteLine($"Название: {book.Name}\nАвтор: {book.Author}\nГод: {book.Year}\n------------");
             }
+
+            Console.WriteLine($"Books count: {bookLibrary.Books.Count}");
+            bookLibrary.Save(new BinarySerializationManager("books.bin"));
+            bookLibrary.RemoveBook(new Book("C# 4.0", "Bart De Smet", 2010));
+            bookLibrary.Load(new BinarySerializationManager("books.bin"));
+            Console.WriteLine($"Books count: {bookLibrary.Books.Count}");
+
+            Console.WriteLine($"Books count: {bookLibrary.Books.Count}");
+            bookLibrary.Save(new XmlManager("books.xml"));
+            bookLibrary.RemoveBook(new Book("C# 4.0", "Bart De Smet", 2010));
+            bookLibrary.Load(new XmlManager("books.xml"));
+            Console.WriteLine($"Books count: {bookLibrary.Books.Count}");
+
             Console.ReadKey();
         }
     }

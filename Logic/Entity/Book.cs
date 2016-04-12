@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 
 namespace Logic
 {
+    [Serializable]
     public class Book: IComparable<Book>
     {
         public string Name { get; set; }
         public string Author { get; set; }
         public int Year { get; set; }
 
+        public Book() { }
         public Book(string name, string author, int year)
         {
             Name = name;
